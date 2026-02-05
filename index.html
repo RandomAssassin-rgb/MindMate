@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="MindMate - Your AI-powered student mental health companion. Track mood, chat with AI counselor, take assessments.">
+    <title>MindMate - Student Mental Health Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://meet.jit.si/external_api.js" async></script>
+</head>
+
+<body>
+    <!-- Crisis Banner -->
+    <div class="crisis-banner">
+        <div class="crisis-content">
+            <span>🆘 Need immediate help?</span>
+            <strong>Crisis Hotline: 988</strong>
+            <span>Available 24/7</span>
+            <button class="crisis-close" aria-label="Close">×</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo" data-page="home">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" fill="url(#logoGrad)" />
+                    <path d="M14 22c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="16" cy="18" r="2" fill="#fff" />
+                    <circle cx="24" cy="18" r="2" fill="#fff" />
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                            <stop stop-color="#124999" />
+                            <stop offset="1" stop-color="#0D9EA3" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">MindMate</span>
+            </a>
+
+            <nav class="nav-desktop">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li class="has-dropdown">
+                        <a href="#" class="nav-link">Features <svg class="dropdown-arrow" width="12" height="12"
+                                viewBox="0 0 12 12">
+                                <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none" />
+                            </svg></a>
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-column">
+                                    <h4>Tools</h4>
+                                    <a href="#" class="mega-menu-link" data-page="mood">
+                                        <span class="menu-icon">📊</span>
+                                        <div><strong>Mood Tracker</strong>
+                                            <p style="font-size:12px;color:var(--muted)">Log daily moods & view trends
+                                            </p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="mega-menu-link" data-page="chat">
+                                        <span class="menu-icon">💬</span>
+                                        <div><strong>AI Chat</strong>
+                                            <p style="font-size:12px;color:var(--muted)">24/7 AI counselor support</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="mega-menu-column">
+                                    <h4>Assessments</h4>
+                                    <a href="#" class="mega-menu-link" data-page="phq9">
+                                        <span class="menu-icon">📝</span>
+                                        <div><strong>PHQ-9</strong>
+                                            <p style="font-size:12px;color:var(--muted)">Depression screening</p>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="mega-menu-link" data-page="gad7">
+                                        <span class="menu-icon">📋</span>
+                                        <div><strong>GAD-7</strong>
+                                            <p style="font-size:12px;color:var(--muted)">Anxiety screening</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="mega-menu-column">
+                                    <div class="mega-menu-featured">
+                                        <div class="featured-card">
+                                            <h5>🎥 Video Consult</h5>
+                                            <p>Connect with counselors via secure video calls</p>
+                                            <a href="#" class="btn btn-white btn-small" data-page="video">Learn More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="#" class="nav-link" data-page="relax">Relax</a></li>
+                    <li><a href="#" class="nav-link" data-page="learn">Learn</a></li>
+                    <li><a href="#" class="nav-link" data-page="chat">AI Chat</a></li>
+                    <li><a href="#" class="nav-link" data-page="video">Video Consult</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn btn-secondary btn-small" data-modal="auth">Sign In</button>
+                <button class="btn btn-small btn-sos" onclick="openModal('safety')">SOS</button>
+                <button class="btn btn-cta btn-small" data-modal="help">Get Help Now</button>
+                <button class="mobile-menu-toggle" aria-label="Menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+
+        <nav class="nav-mobile">
+            <ul class="nav-list-mobile">
+                <li><a href="#" data-page="home">Home</a></li>
+                <li><a href="#" data-page="mood">Mood Tracker</a></li>
+                <li><a href="#" data-page="chat">AI Chat</a></li>
+                <li><a href="#" data-page="phq9">PHQ-9 Assessment</a></li>
+                <li><a href="#" data-page="gad7">GAD-7 Assessment</a></li>
+                <li><a href="#" data-page="video">Video Consult</a></li>
+                <li><a href="#" data-page="profile">My Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <div id="page-home" class="page active">
+            <section class="hero">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <h1 class="hero-title animate-fade-up">
+                            Your <span class="gradient-text">Mental Wellness</span> Companion
+                        </h1>
+                        <p class="hero-subtitle animate-fade-up delay-1">
+                            AI-powered support for students. Track your mood, chat with our AI counselor, take
+                            assessments, and connect with professionals—all in one place.
+                        </p>
+                        <div class="hero-ctas animate-fade-up delay-2">
+                            <button class="btn btn-primary btn-large" data-page="chat">
+                                Start Chatting <span class="btn-arrow">→</span>
+                            </button>
+                            <button class="btn btn-secondary btn-large" data-page="mood">
+                                Track Mood
+                            </button>
+                        </div>
+                        <div class="hero-helpline animate-fade-up delay-3">
+                            <span class="helpline-icon">🆘</span>
+                            <span>In crisis? Call <strong>988</strong> or text HOME to 741741</span>
+                        </div>
+                    </div>
+                    <div class="hero-visual animate-scale-in">
+                        <div class="hero-image-container">
+                            <svg class="hero-illustration" viewBox="0 0 400 400" fill="none">
+                                <circle cx="200" cy="200" r="180" fill="url(#heroGrad)" opacity="0.1" />
+                                <circle cx="200" cy="200" r="120" fill="url(#heroGrad)" opacity="0.15" />
+                                <circle cx="200" cy="200" r="80" fill="url(#heroGrad)" opacity="0.2" />
+                                <text x="200" y="210" text-anchor="middle" font-size="60">🧠</text>
+                                <defs>
+                                    <radialGradient id="heroGrad">
+                                        <stop stop-color="#124999" />
+                                        <stop offset="1" stop-color="#0D9EA3" />
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Tools for Your <span class="gradient-text">Mental Health</span></h2>
+                        <p class="section-subtitle">Everything you need to support your emotional well-being</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card" data-page="chat">
+                            <div class="feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <rect width="48" height="48" rx="12" fill="url(#iconGrad1)" />
+                                    <path d="M16 20h16M16 26h10" stroke="#fff" stroke-width="2"
+                                        stroke-linecap="round" />
+                                    <defs>
+                                        <linearGradient id="iconGrad1" x1="0" y1="0" x2="48" y2="48">
+                                            <stop stop-color="#124999" />
+                                            <stop offset="1" stop-color="#0D9EA3" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title">AI Counselor Chat</h3>
+                            <p class="feature-desc">24/7 AI-powered support using advanced RAG technology for
+                                personalized guidance.</p>
+                            <span class="feature-link">Start chatting →</span>
+                        </div>
+                        <div class="feature-card" data-page="mood">
+                            <div class="feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <rect width="48" height="48" rx="12" fill="url(#iconGrad2)" />
+                                    <path d="M14 34V22M22 34V18M30 34V14M38 34V24" stroke="#fff" stroke-width="2"
+                                        stroke-linecap="round" />
+                                    <defs>
+                                        <linearGradient id="iconGrad2" x1="0" y1="0" x2="48" y2="48">
+                                            <stop stop-color="#1B93AE" />
+                                            <stop offset="1" stop-color="#0D9EA3" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title">Mood Tracking</h3>
+                            <p class="feature-desc">Log daily moods, add notes, and visualize your emotional patterns
+                                over time.</p>
+                            <span class="feature-link">Track mood →</span>
+                        </div>
+                        <div class="feature-card" data-page="phq9">
+                            <div class="feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <rect width="48" height="48" rx="12" fill="url(#iconGrad3)" />
+                                    <path d="M16 16h16v16H16z" stroke="#fff" stroke-width="2" />
+                                    <path d="M20 24l4 4 6-8" stroke="#fff" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <defs>
+                                        <linearGradient id="iconGrad3" x1="0" y1="0" x2="48" y2="48">
+                                            <stop stop-color="#124999" />
+                                            <stop offset="1" stop-color="#1B93AE" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title">PHQ-9 & GAD-7</h3>
+                            <p class="feature-desc">Clinically validated assessments for depression and anxiety
+                                screening.</p>
+                            <span class="feature-link">Take assessment →</span>
+                        </div>
+                        <div class="feature-card" data-page="video">
+                            <div class="feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <rect width="48" height="48" rx="12" fill="url(#iconGrad4)" />
+                                    <rect x="12" y="16" width="18" height="16" rx="2" stroke="#fff" stroke-width="2" />
+                                    <path d="M30 20l8-4v16l-8-4" stroke="#fff" stroke-width="2"
+                                        stroke-linejoin="round" />
+                                    <defs>
+                                        <linearGradient id="iconGrad4" x1="0" y1="0" x2="48" y2="48">
+                                            <stop stop-color="#0D9EA3" />
+                                            <stop offset="1" stop-color="#124999" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title">Video Consult</h3>
+                            <p class="feature-desc">Secure video sessions with counselors using Jitsi WebRTC technology.
+                            </p>
+                            <span class="feature-link">Connect now →</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats-section">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card"><span class="stat-number">24/7</span><span class="stat-label">AI
+                                Support</span></div>
+                        <div class="stat-card"><span class="stat-number">100%</span><span class="stat-label">Private &
+                                Secure</span></div>
+                        <div class="stat-card"><span class="stat-number">Free</span><span class="stat-label">For
+                                Students</span></div>
+                        <div class="stat-card"><span class="stat-number">5min</span><span class="stat-label">Quick
+                                Check-ins</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta-section">
+                <div class="container">
+                    <div class="cta-card">
+                        <div class="cta-content">
+                            <h2>Ready to prioritize your mental health?</h2>
+                            <p>Join thousands of students taking control of their emotional well-being.</p>
+                            <button class="btn btn-white btn-large" data-modal="auth">Get Started Free</button>
+                        </div>
+                        <div class="cta-decoration">
+                            <div class="cta-circle"></div>
+                            <div class="cta-circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Mood Tracker Page -->
+        <div id="page-mood" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <button class="btn-back" data-page="home">← Back</button>
+                    <h1 class="page-title">Mood Tracker</h1>
+                    <p class="page-subtitle">Log your daily mood and track emotional patterns</p>
+                </div>
+                <div class="mood-layout">
+                    <div class="mood-sidebar">
+                        <div class="mood-card">
+                            <h3>How are you feeling today?</h3>
+                            <div class="mood-selector">
+                                <button class="mood-btn" data-mood="1"><span class="mood-emoji">😢</span><span
+                                        class="mood-label">Very Low</span></button>
+                                <button class="mood-btn" data-mood="2"><span class="mood-emoji">😔</span><span
+                                        class="mood-label">Low</span></button>
+                                <button class="mood-btn" data-mood="3"><span class="mood-emoji">😐</span><span
+                                        class="mood-label">Okay</span></button>
+                                <button class="mood-btn" data-mood="4"><span class="mood-emoji">🙂</span><span
+                                        class="mood-label">Good</span></button>
+                                <button class="mood-btn" data-mood="5"><span class="mood-emoji">😄</span><span
+                                        class="mood-label">Great</span></button>
+                            </div>
+                            <div class="mood-note">
+                                <label for="moodNote">Add a note (optional)</label>
+                                <textarea id="moodNote" placeholder="What's on your mind today?"></textarea>
+                            </div>
+                            <button id="saveMoodBtn" class="btn btn-primary btn-full">Save Mood</button>
+                            <div style="text-align:center;margin:12px 0;font-size:12px;color:rgba(255,255,255,0.4)">OR
+                            </div>
+                            <button class="btn btn-secondary btn-full" onclick="openModal('cbt')">📝 New Thought Record
+                                (CBT)</button>
+                        </div>
+                        <div class="gamification-card">
+                            <h3>Your Progress</h3>
+                            <div class="gamification-stats">
+                                <div class="stat"><span class="stat-icon">🏆</span><span class="stat-value"
+                                        id="userPoints">0</span><span class="stat-label">Points</span></div>
+                                <div class="stat"><span class="stat-icon">🔥</span><span class="stat-value"
+                                        id="userStreak">0</span><span class="stat-label">Day Streak</span></div>
+                            </div>
+                            <div class="badges-section">
+                                <h4>Badges</h4>
+                                <div class="badges-list">
+                                    <p class="badge-placeholder">Complete activities to earn badges!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mood-main">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Mood Trends</h3>
+                                <select id="chartRange">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30">Last 30 days</option>
+                                </select>
+                            </div>
+                            <div class="chart-container"><canvas id="moodChart"></canvas></div>
+                        </div>
+                        <div class="mood-history-card">
+                            <h3>Recent Moods</h3>
+                            <div class="mood-history-list" id="moodHistoryList">
+                                <p class="history-placeholder">No moods logged yet. Start tracking today!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHQ-9 Assessment Page -->
+        <div id="page-phq9" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <button class="btn-back" data-page="home">← Back</button>
+                </div>
+                <div class="assessment-header">
+                    <h1 class="page-title">PHQ-9 Depression Screening</h1>
+                    <p class="page-subtitle">Over the last 2 weeks, how often have you been bothered by any of the
+                        following problems?</p>
+                    <div class="assessment-disclaimer">
+                        <span>⚠️</span>
+                        <span>This is a screening tool, not a diagnosis. Please consult a healthcare professional for
+                            proper evaluation.</span>
+                    </div>
+                </div>
+                <div class="assessment-form" id="phq9Form">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="phq9Progress" style="width:11%"></div><span class="progress-text"
+                            id="phq9ProgressText">1 of 9</span>
+                    </div>
+                    <div class="questions-container" id="phq9Questions"></div>
+                    <div class="assessment-actions">
+                        <button id="phq9PrevBtn" class="btn btn-secondary" style="visibility:hidden">← Previous</button>
+                        <button id="phq9NextBtn" class="btn btn-primary">Next Question →</button>
+                    </div>
+                </div>
+                <div class="assessment-results" id="phq9Results" style="display:none"></div>
+            </div>
+        </div>
+
+        <!-- GAD-7 Assessment Page -->
+        <div id="page-gad7" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <button class="btn-back" data-page="home">← Back</button>
+                </div>
+                <div class="assessment-header">
+                    <h1 class="page-title">GAD-7 Anxiety Screening</h1>
+                    <p class="page-subtitle">Over the last 2 weeks, how often have you been bothered by the following
+                        problems?</p>
+                    <div class="assessment-disclaimer">
+                        <span>⚠️</span>
+                        <span>This is a screening tool, not a diagnosis. Please consult a healthcare professional for
+                            proper evaluation.</span>
+                    </div>
+                </div>
+                <div class="assessment-form" id="gad7Form">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="gad7Progress" style="width:14%"></div><span class="progress-text"
+                            id="gad7ProgressText">1 of 7</span>
+                    </div>
+                    <div class="questions-container" id="gad7Questions"></div>
+                    <div class="assessment-actions">
+                        <button id="gad7PrevBtn" class="btn btn-secondary" style="visibility:hidden">← Previous</button>
+                        <button id="gad7NextBtn" class="btn btn-primary">Next Question →</button>
+                    </div>
+                </div>
+                <div class="assessment-results" id="gad7Results" style="display:none"></div>
+            </div>
+        </div>
+
+        <!-- AI Chat Page -->
+        <div id="page-chat" class="page">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="chat-avatar">🧠</div>
+                        <div class="chat-header-text">
+                            <h2>MindMate AI</h2>
+                            <span class="chat-status">● Online</span>
+                        </div>
+                    </div>
+                    <span class="chat-disclaimer-badge">AI Support Tool</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-welcome">
+                        <div class="welcome-icon">💬</div>
+                        <h3>Hi! I'm your MindMate AI counselor</h3>
+                        <p>I'm here to listen and support you 24/7. How can I help you today?</p>
+                        <div class="quick-topics">
+                            <button class="topic-btn">I'm feeling stressed</button>
+                            <button class="topic-btn">I can't sleep</button>
+                            <button class="topic-btn">I need someone to talk to</button>
+                            <button class="topic-btn">Help with anxiety</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="chat-input-container">
+                        <textarea id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button id="chatSendBtn" class="chat-send-btn" aria-label="Send">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="chat-footer-note">This is an AI tool, not a replacement for professional help. <span
+                            class="crisis-link" data-modal="crisis">Crisis resources</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Consult Page -->
+        <div id="page-video" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <button class="btn-back" data-page="home">← Back</button>
+                    <h1 class="page-title">Video Consultation</h1>
+                    <p class="page-subtitle">Connect with counselors via secure video call</p>
+                </div>
+                <div class="video-layout">
+                    <div class="video-main">
+                        <div class="video-placeholder">
+                            <div class="video-placeholder-content">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                    <rect width="80" height="80" rx="20" fill="var(--surface)" />
+                                    <rect x="20" y="26" width="30" height="28" rx="4" stroke="var(--primary)"
+                                        stroke-width="2" />
+                                    <path d="M50 34l12-6v24l-12-6" stroke="var(--primary)" stroke-width="2"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <h3>Ready to start your session?</h3>
+                                <p>Click below to join a secure video room</p>
+                                <button id="startVideoBtn" class="btn btn-primary btn-large">Start Video Call</button>
+                            </div>
+                        </div>
+                        <div id="jitsiContainer" style="display:none"></div>
+                    </div>
+                    <div class="video-sidebar">
+                        <div class="sidebar-card">
+                            <h3>Before Your Call</h3>
+                            <ul class="checklist">
+                                <li><input type="checkbox" id="check1"><label for="check1">Test camera &
+                                        microphone</label></li>
+                                <li><input type="checkbox" id="check2"><label for="check2">Find a quiet, private
+                                        space</label></li>
+                                <li><input type="checkbox" id="check3"><label for="check3">Have good internet
+                                        connection</label></li>
+                                <li><input type="checkbox" id="check4"><label for="check4">Prepare topics to
+                                        discuss</label></li>
+                            </ul>
+                        </div>
+                        <div class="sidebar-card sidebar-card-cta">
+                            <h3>Need Immediate Help?</h3>
+                            <p style="font-size:14px;color:var(--muted);margin-bottom:12px">If you're in crisis, please
+                                call the helpline.</p>
+                            <button class="btn btn-cta btn-full" data-modal="crisis">Crisis Resources</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="page-profile" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <button class="btn-back" data-page="home">← Back</button>
+                    <h1 class="page-title">My Profile</h1>
+                </div>
+                <div class="profile-layout">
+                    <div class="profile-main">
+                        <div class="profile-card">
+                            <div class="profile-avatar">S</div>
+                            <div class="profile-info">
+                                <h2>Student User</h2>
+                                <p>student@university.edu</p>
+                                <button class="btn btn-secondary btn-small">Edit Profile</button>
+                            </div>
+                        </div>
+                        <div class="profile-stats-grid">
+                            <div class="profile-stat-card"><span class="stat-icon">🏆</span><span class="stat-value"
+                                    id="profilePoints">45</span><span class="stat-label">Points</span></div>
+                            <div class="profile-stat-card"><span class="stat-icon">🔥</span><span class="stat-value"
+                                    id="profileStreak">3</span><span class="stat-label">Day Streak</span></div>
+                            <div class="profile-stat-card"><span class="stat-icon">📊</span><span
+                                    class="stat-value">12</span><span class="stat-label">Moods Logged</span></div>
+                            <div class="profile-stat-card"><span class="stat-icon">📝</span><span
+                                    class="stat-value">2</span><span class="stat-label">Assessments</span></div>
+                        </div>
+                        <div class="profile-badges-card">
+                            <h3>Badges & Achievements</h3>
+                            <div class="profile-badges-grid">
+                                <div class="badge-item"><span class="badge-icon">🌟</span><span class="badge-name">First
+                                        Step</span><span class="badge-desc">Logged first mood</span></div>
+                                <div class="badge-item"><span class="badge-icon">📊</span><span
+                                        class="badge-name">Self-Aware</span><span class="badge-desc">Completed first
+                                        assessment</span></div>
+                                <div class="badge-item locked"><span class="badge-icon">🔒</span><span
+                                        class="badge-name">Week Warrior</span><span class="badge-desc">7-day
+                                        streak</span></div>
+                                <div class="badge-item locked"><span class="badge-icon">🔒</span><span
+                                        class="badge-name">Century Club</span><span class="badge-desc">Earn 100
+                                        points</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-sidebar">
+                        <div class="activity-card">
+                            <h3>Recent Activity</h3>
+                            <p class="activity-placeholder">No recent activity</p>
+                        </div>
+                        <div class="assessment-history-card">
+                            <h3>Assessment History</h3>
+                            <p class="assessment-placeholder">Complete an assessment to see results here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relax Page (SPA) -->
+        <div id="page-relax" class="page">
+            <div class="relax-hero animate-fade-up">
+                <h1>Find Your Peace</h1>
+                <p>Curated mindfulness for every moment.</p>
+
+                <!-- Breathing Widget -->
+                <div class="breathing-widget-container">
+                    <div class="breathing-circle" id="breathCircle">
+                        <span id="breathText">Breathe</span>
+                    </div>
+                    <button class="btn btn-small btn-secondary" onclick="toggleBreathing()">Start Breathing</button>
+                </div>
+            </div>
+
+            <div class="container relax-content">
+                <!-- Categories -->
+                <section class="relax-section">
+                    <div class="section-header-row">
+                        <h3>🌙 Sleep Stories</h3>
+                        <a href="#" class="view-all" onclick="filterRelax('Sleep')">View All</a>
+                    </div>
+                    <div class="horizontal-scroll" id="scroll-Sleep">
+                        <!-- Populated by JS -->
+                        <div class="scroll-loader">Loading...</div>
+                    </div>
+                </section>
+
+                <section class="relax-section">
+                    <div class="section-header-row">
+                        <h3>🧘 Guided Meditations</h3>
+                        <a href="#" class="view-all" onclick="filterRelax('Meditation')">View All</a>
+                    </div>
+                    <div class="horizontal-scroll" id="scroll-Meditation">
+                        <!-- Populated by JS -->
+                        <div class="scroll-loader">Loading...</div>
+                    </div>
+                </section>
+
+                <section class="relax-section">
+                    <div class="section-header-row">
+                        <h3>🎧 Ambient Sounds</h3>
+                        <a href="#" class="view-all" onclick="filterRelax('Sounds')">View All</a>
+                    </div>
+                    <div class="horizontal-scroll" id="scroll-Sounds">
+                        <!-- Populated by JS -->
+                        <div class="scroll-loader">Loading...</div>
+                    </div>
+                </section>
+
+                <section class="relax-section">
+                    <div class="section-header-row">
+                        <h3>🚀 Focus & Work</h3>
+                        <a href="#" class="view-all" onclick="filterRelax('Focus')">View All</a>
+                    </div>
+                    <div class="horizontal-scroll" id="scroll-Focus">
+                        <!-- Populated by JS -->
+                        <div class="scroll-loader">Loading...</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Learn Page (SPA) -->
+        <div id="page-learn" class="page">
+            <div class="container">
+                <div class="learn-hero">
+                    <h1>Mental Health Academy</h1>
+                    <p>Short, evidence-based guides to help you thrive.</p>
+                </div>
+                <div class="learn-grid" id="learnGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="#" class="logo"><span class="logo-text">MindMate</span></a>
+                    <p class="footer-tagline">Supporting student mental health with AI-powered tools and professional
+                        connections.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Features</h4><a href="#" data-page="chat">AI Chat</a><a href="#" data-page="mood">Mood
+                            Tracker</a><a href="#" data-page="phq9">Assessments</a><a href="#" data-page="video">Video
+                            Consult</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4><a href="#">Help Center</a><a href="#">Privacy Policy</a><a href="#">Terms of
+                            Service</a><a href="#">Contact Us</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4><a href="#">Mental Health Tips</a><a href="#">Crisis Support</a><a
+                            href="#">For Counselors</a><a href="#">Research</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-helpline">
+                <span class="helpline-badge">🆘 Crisis Helpline</span>
+                <span class="helpline-number">988 (Suicide & Crisis Lifeline)</span>
+                <span>Available 24/7</span>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 MindMate. All rights reserved.</p>
+                <p class="footer-disclaimer">MindMate is not a substitute for professional medical advice, diagnosis, or
+                    treatment.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="modal-help" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-help">
+            <button class="modal-close">×</button>
+            <h2>How can we help?</h2>
+            <p>Choose an option that best describes your situation.</p>
+            <div class="help-options">
+                <button class="help-option" data-page="chat" onclick="closeAllModals();navigateTo('chat')"><span
+                        class="option-icon">💬</span>
+                    <div class="option-text"><strong>Talk to AI Counselor</strong><span>Get immediate 24/7
+                            support</span></div>
+                </button>
+                <button class="help-option" data-page="mood" onclick="closeAllModals();navigateTo('mood')"><span
+                        class="option-icon">📊</span>
+                    <div class="option-text"><strong>Track My Mood</strong><span>Log how you're feeling today</span>
+                    </div>
+                </button>
+                <button class="help-option" data-page="phq9" onclick="closeAllModals();navigateTo('phq9')"><span
+                        class="option-icon">📝</span>
+                    <div class="option-text"><strong>Take an Assessment</strong><span>Quick mental health
+                            check-in</span></div>
+                </button>
+                <button class="help-option help-option-crisis" data-modal="crisis"
+                    onclick="closeAllModals();openModal('crisis')"><span class="option-icon">🆘</span>
+                    <div class="option-text"><strong>I'm in Crisis</strong><span>Get immediate professional help</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-crisis" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-crisis">
+            <button class="modal-close">×</button>
+            <h2>🆘 Crisis Support</h2>
+            <p>If you're in immediate danger, please contact emergency services (911) right away.</p>
+            <div class="crisis-contacts">
+                <a href="tel:988" class="crisis-contact"><span class="contact-icon">📞</span>
+                    <div class="contact-info"><strong>988</strong><span>Suicide & Crisis Lifeline (24/7)</span></div>
+                </a>
+                <a href="sms:741741?body=HELLO" class="crisis-contact"><span class="contact-icon">💬</span>
+                    <div class="contact-info"><strong>Text HOME to 741741</strong><span>Crisis Text Line (24/7)</span>
+                    </div>
+                </a>
+                <a href="tel:911" class="crisis-contact"><span class="contact-icon">🚨</span>
+                    <div class="contact-info"><strong>911</strong><span>Emergency Services</span></div>
+                </a>
+            </div>
+            <p class="crisis-note">These services are free, confidential, and available 24/7.</p>
+            <button class="btn btn-primary btn-full" onclick="closeAllModals()">I'm Safe, Close This</button>
+        </div>
+    </div>
+
+    <div id="modal-safety" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-safety">
+            <button class="modal-close">×</button>
+            <div class="safety-header">
+                <h2>🛡️ My Safety Plan</h2>
+                <p>A guide for when things get tough.</p>
+            </div>
+
+            <form id="safetyForm">
+                <div class="safety-section">
+                    <h3>⚠️ Warning Signs</h3>
+                    <p class="safety-hint">Thoughts, images, mood, behavior, or situations that indicate a crisis may be
+                        developing.</p>
+                    <textarea name="warning_signs" placeholder="e.g. Isolating myself, feeling hopeless..."></textarea>
+                </div>
+
+                <div class="safety-section">
+                    <h3>🧘 Coping Strategies</h3>
+                    <p class="safety-hint">Things I can do to take my mind off my problems without contacting another
+                        person.</p>
+                    <textarea name="coping_strategies" placeholder="e.g. Listen to music, go for a walk..."></textarea>
+                </div>
+
+                <div class="safety-section">
+                    <h3>👥 Trusted Contacts</h3>
+                    <input type="text" name="trusted_contact_name" placeholder="Name">
+                    <input type="tel" name="trusted_contact_phone" placeholder="Phone Number">
+                </div>
+
+                <div class="safety-section">
+                    <h3>🚑 Professional Support</h3>
+                    <input type="text" name="professional_contact_name" placeholder="Name (Therapist/Doctor)">
+                    <input type="tel" name="professional_contact_phone" placeholder="Phone Number">
+                </div>
+
+                <div class="safety-section">
+                    <h3>🏥 Safe Places</h3>
+                    <textarea name="safe_places" placeholder="Places I can go to feel safe..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Save Safety Plan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-auth" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-auth">
+            <button class="modal-close">×</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Sign In</button>
+                <button class="auth-tab" data-tab="signup">Create Account</button>
+            </div>
+            <form id="form-login" class="auth-form active">
+                <h2>Welcome Back</h2>
+                <div class="form-group"><label for="loginEmail">Email</label><input type="email" id="loginEmail"
+                        required placeholder="you@university.edu"></div>
+                <div class="form-group"><label for="loginPassword">Password</label><input type="password"
+                        id="loginPassword" required placeholder="••••••••"></div>
+                <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                <div class="auth-divider">or</div>
+                <button type="button" class="btn btn-google btn-full">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path
+                            d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62z"
+                            fill="#4285F4" />
+                        <path
+                            d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.26a5.4 5.4 0 0 1-8.09-2.84H1v2.33A9 9 0 0 0 9 18z"
+                            fill="#34A853" />
+                        <path
+                            d="M3.96 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.28-1.72V4.95H1A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l2.96-2.33z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 1 4.95l2.96 2.33A5.36 5.36 0 0 1 9 3.58z"
+                            fill="#EA4335" />
+                    </svg>
+                    Continue with Google
+                </button>
+            </form>
+            <form id="form-signup" class="auth-form">
+                <h2>Create Account</h2>
+                <div class="form-group"><label for="signupName">Full Name</label><input type="text" id="signupName"
+                        required placeholder="Your Name"></div>
+                <div class="form-group"><label for="signupEmail">Email</label><input type="email" id="signupEmail"
+                        required placeholder="you@university.edu"></div>
+                <div class="form-group"><label for="signupPassword">Password</label><input type="password"
+                        id="signupPassword" required placeholder="Create a strong password"></div>
+                <div class="form-group checkbox-group"><input type="checkbox" id="agreeTerms" required><label
+                        for="agreeTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy
+                            Policy</a></label></div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                <div class="auth-divider">or</div>
+                <button type="button" class="btn btn-google btn-full">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path
+                            d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62z"
+                            fill="#4285F4" />
+                        <path
+                            d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.26a5.4 5.4 0 0 1-8.09-2.84H1v2.33A9 9 0 0 0 9 18z"
+                            fill="#34A853" />
+                        <path
+                            d="M3.96 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.28-1.72V4.95H1A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l2.96-2.33z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 1 4.95l2.96 2.33A5.36 5.36 0 0 1 9 3.58z"
+                            fill="#EA4335" />
+                    </svg>
+                    Continue with Google
+                </button>
+            </form>
+            <div id="modal-cbt" class="modal">
+                <div class="modal-overlay"></div>
+                <div class="modal-content modal-cbt">
+                    <button class="modal-close">×</button>
+                    <div class="cbt-header">
+                        <h2>📝 Thought Record</h2>
+                        <div class="step-indicators">
+                            <span class="step active">1</span>
+                            <span class="step">2</span>
+                            <span class="step">3</span>
+                        </div>
+                    </div>
+
+                    <form id="cbtForm">
+                        <!-- Step 1: Situation -->
+                        <div class="cbt-step active" data-step="1">
+                            <h3>What happened?</h3>
+                            <div class="form-group">
+                                <label>Trigger / Situation</label>
+                                <textarea name="trigger" placeholder="e.g. I have a big exam tomorrow..."
+                                    required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Emotion & Intensity (1-10)</label>
+                                <div class="emotion-input-group">
+                                    <input type="text" name="emotion" placeholder="e.g. Anxious" required>
+                                    <input type="number" name="intensity" min="1" max="10" value="5" required>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-full next-step">Next: Identify
+                                Thoughts</button>
+                        </div>
+
+                        <!-- Step 2: Thoughts -->
+                        <div class="cbt-step" data-step="2">
+                            <h3>What went through your mind?</h3>
+                            <div class="form-group">
+                                <label>Automatic Negative Thought</label>
+                                <textarea name="automatic_thought"
+                                    placeholder="e.g. I'm going to fail and everyone will laugh..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Cognitive Distortion</label>
+                                <select name="distortion">
+                                    <option value="All-or-Nothing">All-or-Nothing Thinking</option>
+                                    <option value="Catastrophizing">Catastrophizing</option>
+                                    <option value="Emotional Reasoning">Emotional Reasoning</option>
+                                    <option value="Mind Reading">Mind Reading</option>
+                                    <option value="Should Statements">Should Statements</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary prev-step">Back</button>
+                                <button type="button" class="btn btn-primary next-step">Next: Reframe</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Reframe -->
+                        <div class="cbt-step" data-step="3">
+                            <h3>Challenge the thought</h3>
+                            <div class="form-group">
+                                <label>Evidence against the thought?</label>
+                                <textarea name="challenge" placeholder="e.g. I've studied hard and passed before..."
+                                    required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Balanced Perspective</label>
+                                <textarea name="balanced_thought"
+                                    placeholder="e.g. I might be nervous, but I'm prepared..." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary prev-step">Back</button>
+                                <button type="submit" class="btn btn-primary">Save Entry</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container"></div>
+        <script src="supabase-config.js"></script>
+        <script src="app.js"></script>
+        <!-- Audio Player Bar -->
+        <div class="audio-player-bar" id="playerBar">
+            <div class="player-info">
+                <h4 id="playerTitle">Select a track</h4>
+                <p id="playerTime" style="font-size:12px;color:gray">00:00 / 00:00</p>
+            </div>
+            <div class="player-controls">
+                <button class="control-btn" id="rewindBtn">⏪</button>
+                <button class="control-btn play-btn" id="playPauseBtn">▶</button>
+                <button class="control-btn" id="forwardBtn">⏩</button>
+            </div>
+            <audio id="mainAudio"></audio>
+        </div>
+
+        <!-- Article Modal -->
+        <div id="modal-article" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content article-modal">
+                <button class="modal-close" onclick="closeModal('article')">×</button>
+                <div id="article-content" class="article-body"></div>
+            </div>
+        </div>
+</body>
+
+</html>

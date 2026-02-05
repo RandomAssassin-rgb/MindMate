@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMate - Counselor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Base styles -->
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🧠</span> MindMate <span class="badge-admin">Counselor</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Student View</a>
+            <button id="logoutBtn" class="btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        <!-- Header Stats -->
+        <header class="dashboard-header">
+            <div>
+                <h1>Counselor Dashboard</h1>
+                <p>Overview of student mental health and risks</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card urgent">
+                    <h3>High Risk</h3>
+                    <div class="value" id="statHighRisk">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Students</h3>
+                    <div class="value" id="statActiveStudents">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Mood Logs (24h)</h3>
+                    <div class="value" id="statMoods24h">-</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="dashboard-grid">
+
+            <!-- Risk Alerts Column -->
+            <section class="card risk-section">
+                <div class="card-header">
+                    <h2>⚠️ Risk Alerts</h2>
+                    <span class="badge badge-red">Requires Attention</span>
+                </div>
+                <div class="list-container" id="riskList">
+                    <p class="loading-text">Loading alerts...</p>
+                </div>
+            </section>
+
+            <!-- Activity Feed -->
+            <section class="card activity-section">
+                <div class="card-header">
+                    <h2>Recent Mood Logs</h2>
+                </div>
+                <div class="list-container" id="moodList">
+                    <p class="loading-text">Loading activity...</p>
+                </div>
+            </section>
+
+            <!-- Consultations -->
+            <section class="card consult-section">
+                <div class="card-header">
+                    <h2>📹 Video Consultations</h2>
+                    <button class="btn-primary-sm" onclick="alert('Scheduling feature coming soon!')">Schedule
+                        New</button>
+                </div>
+                <div class="video-history" id="videoList">
+                    <p class="loading-text">Loading history...</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
