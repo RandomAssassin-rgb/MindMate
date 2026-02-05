@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 import {
   Hash, Send, Shield, Users, Loader2, Menu, X,
   AlertTriangle, Lock, Copy, Check, Sparkles,
-  MessageCircle, Heart, Bell
+  MessageCircle, Heart, Bell, Eye, EyeOff
 } from 'lucide-react';
 
 // Supabase client for realtime
@@ -1231,6 +1231,7 @@ function SessionGate({ onSessionCreated }: { onSessionCreated: (session: Session
   const [error, setError] = useState('');
   const [createdSession, setCreatedSession] = useState<{ session: Session; recoveryCode: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showPin, setShowPin] = useState(false);
 
   const handlePinChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -1386,13 +1387,37 @@ function SessionGate({ onSessionCreated }: { onSessionCreated: (session: Session
           )}
 
           <FormGroup>
-            <Label>{mode === 'recover' ? 'New 6-digit PIN' : '6-digit PIN'}</Label>
+            <Label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>{mode === 'recover' ? 'New 6-digit PIN' : '6-digit PIN'}</span>
+              <button
+                type="button"
+                onClick={() => setShowPin(!showPin)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6B7280',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 12,
+                  padding: '4px 8px',
+                  borderRadius: 6,
+                  transition: 'background 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+              >
+                {showPin ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPin ? 'Hide' : 'Show'}
+              </button>
+            </Label>
             <PinContainer>
               {pin.map((digit, i) => (
                 <PinDigit
                   key={i}
                   id={`pin-${i}`}
-                  type="text"
+                  type={showPin ? 'text' : 'password'}
                   inputMode="numeric"
                   value={digit}
                   onChange={(e) => handlePinChange(i, e.target.value)}

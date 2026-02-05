@@ -800,12 +800,24 @@ export function Header() {
               </MobileNavSection>
 
               <div style={{ marginTop: 'auto', paddingTop: 24 }}>
-                <Button fullWidth style={{ marginBottom: 12 }}>
-                  Try for free
-                </Button>
-                <Button variant="outline" fullWidth>
-                  Log in
-                </Button>
+                {user ? (
+                  <Button variant="outline" fullWidth onClick={handleSignOut}>
+                    Log Out
+                  </Button>
+                ) : (
+                  <>
+                    <Link href="/signup" style={{ width: '100%', display: 'block' }}>
+                      <Button fullWidth style={{ marginBottom: 12 }}>
+                        Get Started
+                      </Button>
+                    </Link>
+                    <Link href="/login" style={{ width: '100%', display: 'block' }}>
+                      <Button variant="outline" fullWidth>
+                        Log in
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </MobileMenu>
           </>

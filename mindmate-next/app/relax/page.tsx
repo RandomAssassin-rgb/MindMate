@@ -403,31 +403,22 @@ interface Track {
 // Demo tracks for when Supabase is empty
 const demoTracks: Track[] = [
   // Sleep Stories
-  { id: 's1', title: 'Moonlit Forest Journey', category: 'Sleep', duration_sec: 1200, audio_url: '', description: 'A calming journey through a peaceful forest' },
-  { id: 's2', title: 'Ocean Dreams', category: 'Sleep', duration_sec: 900, audio_url: '', description: 'Drift off to the sound of gentle waves' },
-  { id: 's3', title: 'Starlight Meadow', category: 'Sleep', duration_sec: 1500, audio_url: '', description: 'A peaceful night under the stars' },
-  { id: 's4', title: 'Cozy Cabin Rain', category: 'Sleep', duration_sec: 1800, audio_url: '', description: 'Rain on a cabin roof lulls you to sleep' },
+  { id: 's1', title: 'Bedtime Story: The Star', category: 'Sleep', duration_sec: 1200, audio_url: '/audio/lofi.mp3', description: 'A classic calming bedtime story.' },
+  { id: 's2', title: 'Ocean Dreams', category: 'Sleep', duration_sec: 900, audio_url: '/audio/rain.ogg', description: 'Drift off to the sound of gentle waves' },
 
   // Meditation
-  { id: 'm1', title: 'Morning Mindfulness', category: 'Meditation', duration_sec: 600, audio_url: '', description: 'Start your day with clarity' },
-  { id: 'm2', title: 'Stress Relief', category: 'Meditation', duration_sec: 900, audio_url: '', description: 'Release tension and find calm' },
-  { id: 'm3', title: 'Body Scan Relaxation', category: 'Meditation', duration_sec: 1200, audio_url: '', description: 'Progressive relaxation for deep rest' },
-  { id: 'm4', title: 'Loving Kindness', category: 'Meditation', duration_sec: 720, audio_url: '', description: 'Cultivate compassion and self-love' },
-  { id: 'm5', title: 'Anxiety Relief', category: 'Meditation', duration_sec: 600, audio_url: '', description: 'Calm your anxious thoughts' },
+  { id: 'm1', title: 'Box Breathing Guide', category: 'Meditation', duration_sec: 300, audio_url: '/audio/rain.ogg', description: 'Deep flowing water for breathing focus.' },
+  { id: 'm2', title: 'Morning Positivity', category: 'Meditation', duration_sec: 600, audio_url: '/audio/rain.ogg', description: 'Start your day with positive energy.' },
+  { id: 'm3', title: 'Body Scan Relaxation', category: 'Meditation', duration_sec: 1200, audio_url: '/audio/rain.ogg', description: 'Progressive relaxation with forest sounds.' },
 
   // Nature Sounds
-  { id: 'n1', title: 'Gentle Rain', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'Soft rainfall for relaxation' },
-  { id: 'n2', title: 'Forest Birds', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'Morning birdsong in a peaceful forest' },
-  { id: 'n3', title: 'Ocean Waves', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'Rhythmic waves on a sandy beach' },
-  { id: 'n4', title: 'Thunderstorm', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'Distant thunder and heavy rain' },
-  { id: 'n5', title: 'Flowing Stream', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'A gentle brook in the mountains' },
-  { id: 'n6', title: 'Night Crickets', category: 'Sounds', duration_sec: 3600, audio_url: '', description: 'Summer night with crickets chirping' },
+  { id: 'n1', title: 'Forest Ambience', category: 'Sounds', duration_sec: 3600, audio_url: '/audio/rain.ogg', description: 'Immersive forest sounds.' },
+  { id: 'n2', title: 'Ocean Waves', category: 'Sounds', duration_sec: 3600, audio_url: '/audio/rain.ogg', description: 'Rhythmic waves on a sandy beach' },
+  { id: 'n3', title: 'Gentle Rain', category: 'Sounds', duration_sec: 3600, audio_url: '/audio/rain.ogg', description: 'Soft rainfall for relaxation' },
 
   // Focus Music
-  { id: 'f1', title: 'Deep Focus', category: 'Focus', duration_sec: 2700, audio_url: '', description: 'Ambient music for concentration' },
-  { id: 'f2', title: 'Study Session', category: 'Focus', duration_sec: 3600, audio_url: '', description: 'Lo-fi beats for studying' },
-  { id: 'f3', title: 'Creative Flow', category: 'Focus', duration_sec: 2400, audio_url: '', description: 'Inspiring ambient for creativity' },
-  { id: 'f4', title: 'Productivity Boost', category: 'Focus', duration_sec: 1800, audio_url: '', description: 'Energizing focus music' }
+  { id: 'f1', title: 'Deep Focus Alpha', category: 'Focus', duration_sec: 2700, audio_url: '/audio/lofi.mp3', description: 'Alpha waves for deep concentration.' },
+  { id: 'f2', title: 'Lo-Fi Focus Beats', category: 'Focus', duration_sec: 3600, audio_url: '/audio/lofi.mp3', description: 'Chill beats for studying and work.' }
 ];
 
 export default function RelaxPage() {
@@ -441,10 +432,16 @@ export default function RelaxPage() {
   const [breathActive, setBreathActive] = useState(false);
   const [breathCount, setBreathCount] = useState(4);
   const cardsRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Fetch tracks from Supabase, fall back to demo data
   useEffect(() => {
     async function fetchTracks() {
+      // Force use of local curated tracks for now to ensure quality match
+      setTracks(demoTracks);
+      setLoading(false);
+
+      /* 
       try {
         const { data, error } = await supabase.from('meditations').select('*');
         if (error) throw error;
@@ -457,6 +454,7 @@ export default function RelaxPage() {
       } finally {
         setLoading(false);
       }
+      */
     }
     fetchTracks();
   }, []);
@@ -504,9 +502,20 @@ export default function RelaxPage() {
     }
   }, [loading, activeCategory]);
 
-  // Simulate progress when playing
+  // Handle Audio Playback
   useEffect(() => {
-    if (isPlaying && currentTrack) {
+    if (currentTrack?.audio_url && audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, currentTrack]);
+
+  // Simulate progress when playing (ONLY for demo tracks)
+  useEffect(() => {
+    if (isPlaying && currentTrack && !currentTrack.audio_url) {
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
@@ -519,6 +528,55 @@ export default function RelaxPage() {
       return () => clearInterval(interval);
     }
   }, [isPlaying, currentTrack]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current && currentTrack?.audio_url) {
+      const current = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+
+      if (Number.isFinite(duration) && duration > 0) {
+        setProgress((current / duration) * 100);
+      }
+
+      if (Number.isFinite(duration) && current >= duration) {
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!currentTrack) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = (x / rect.width) * 100;
+    setProgress(percentage);
+
+    if (currentTrack.audio_url && audioRef.current) {
+      // Only seek if duration is valid
+      const duration = audioRef.current.duration;
+      if (Number.isFinite(duration)) {
+        const time = (percentage / 100) * duration;
+        if (Number.isFinite(time)) {
+          audioRef.current.currentTime = time;
+        }
+      }
+    }
+  };
+
+  const skipTime = (seconds: number) => {
+    if (!currentTrack) return;
+
+    if (currentTrack.audio_url && audioRef.current) {
+      const duration = audioRef.current.duration;
+      if (Number.isFinite(duration)) {
+        audioRef.current.currentTime += seconds;
+      }
+    } else {
+      // For demo tracks without URL, just adjust progress percentage
+      const percentChange = (seconds / currentTrack.duration_sec) * 100;
+      setProgress(p => Math.min(100, Math.max(0, p + percentChange)));
+    }
+  };
 
   const filteredTracks = activeCategory === 'all'
     ? tracks
@@ -669,12 +727,35 @@ export default function RelaxPage() {
               <X size={24} />
             </CloseButton>
 
+            {currentTrack.audio_url && (
+              <audio
+                key={currentTrack.id}
+                ref={audioRef}
+                src={currentTrack.audio_url}
+                autoPlay
+                crossOrigin="anonymous"
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={() => setIsPlaying(false)}
+                onLoadedMetadata={() => {
+                  // Ensure duration is set when metadata loads
+                  if (audioRef.current) {
+                    audioRef.current.play().catch(e => console.log('Autoplay blocked:', e));
+                    setIsPlaying(true);
+                  }
+                }}
+                onError={(e) => {
+                  console.error("Audio error:", e.currentTarget.error);
+                  setIsPlaying(false);
+                }}
+              />
+            )}
+
             <PlayerImage image={getImageForTrack(currentTrack)} />
 
             <PlayerTitle>{currentTrack.title}</PlayerTitle>
             <PlayerCategory>{currentTrack.category}</PlayerCategory>
 
-            <ProgressBar>
+            <ProgressBar onClick={handleSeek} style={{ cursor: 'pointer' }}>
               <ProgressFill style={{ width: `${progress}%` }} />
             </ProgressBar>
 
@@ -684,7 +765,7 @@ export default function RelaxPage() {
             </ProgressTime>
 
             <PlayerControls>
-              <ControlButton whileHover={{ scale: 1.1 }}>
+              <ControlButton whileHover={{ scale: 1.1 }} onClick={() => skipTime(-15)}>
                 <SkipBack size={24} />
               </ControlButton>
 
@@ -696,7 +777,7 @@ export default function RelaxPage() {
                 {isPlaying ? <Pause size={32} /> : <Play size={32} style={{ marginLeft: 4 }} />}
               </ControlButton>
 
-              <ControlButton whileHover={{ scale: 1.1 }}>
+              <ControlButton whileHover={{ scale: 1.1 }} onClick={() => skipTime(15)}>
                 <SkipForward size={24} />
               </ControlButton>
             </PlayerControls>

@@ -488,9 +488,11 @@ export default function VideoPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Button size="lg" rightIcon={<Calendar size={18} />}>
-              Book a Session
-            </Button>
+            <Link href="/video/book">
+              <Button size="lg" rightIcon={<Calendar size={18} />}>
+                Book a Session
+              </Button>
+            </Link>
           </motion.div>
         </Container>
       </HeroSection>

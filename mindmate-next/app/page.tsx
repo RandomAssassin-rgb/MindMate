@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { motion, useInView } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import {
     ArrowRight, Check, Play, Star, Sparkles, Phone, MessageCircle,
     Activity, Heart, Brain, ChevronDown, Lock, Shield, Award, Zap, Users,
@@ -700,6 +702,12 @@ const itemVariants = {
 };
 
 export default function HomePage() {
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    }, []);
+
     const heroRef = useRef<HTMLDivElement>(null);
     const screenshotRef = useRef<HTMLDivElement>(null);
     const featuresRef = useRef<HTMLDivElement>(null);
@@ -805,7 +813,7 @@ export default function HomePage() {
 
                             <motion.div variants={itemVariants}>
                                 <HeroCTAs>
-                                    <Link href="/login">
+                                    <Link href={user ? "/dashboard" : "/login"}>
                                         <Button size="lg" rightIcon={<ArrowRight size={20} />}>
                                             Get Started Free
                                         </Button>
@@ -1268,7 +1276,7 @@ export default function HomePage() {
                             It's free to get started.
                         </CTADescription>
                         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-                            <Link href="/login">
+                            <Link href={user ? "/dashboard" : "/login"}>
                                 <Button size="lg" rightIcon={<ArrowRight size={20} />}>
                                     Get Started Free
                                 </Button>

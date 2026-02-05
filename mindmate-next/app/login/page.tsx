@@ -349,7 +349,7 @@ export default function LoginPage() {
       if (error) throw error;
 
       setSuccess('Login successful! Redirecting...');
-      setTimeout(() => router.push('/'), 1000);
+      setTimeout(() => router.push('/dashboard'), 1000);
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
     } finally {

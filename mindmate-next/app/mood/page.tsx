@@ -305,7 +305,8 @@ const activities = [
   { id: 'reading', label: 'Reading', icon: Book },
   { id: 'meditation', label: 'Meditate', icon: Heart },
   { id: 'energy', label: 'Energy', icon: Zap },
-  { id: 'outdoors', label: 'Outdoors', icon: TrendingUp }
+  { id: 'outdoors', label: 'Outdoors', icon: TrendingUp },
+  { id: 'others', label: 'Others', icon: Plus }
 ];
 
 interface MoodEntry {
@@ -330,6 +331,7 @@ const chartData = [
 export default function MoodPage() {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [customActivity, setCustomActivity] = useState('');
   const [note, setNote] = useState('');
   const [entries, setEntries] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -360,17 +362,27 @@ export default function MoodPage() {
 
     setLoading(true);
     try {
+      // Process activities to replace 'others' with custom text
+      let finalActivities = [...selectedActivities];
+      if (finalActivities.includes('others')) {
+        finalActivities = finalActivities.filter(a => a !== 'others');
+        if (customActivity.trim()) {
+          finalActivities.push(customActivity.trim());
+        }
+      }
+
       const newEntry: MoodEntry = {
         id: Date.now().toString(),
         mood: selectedMood,
         note: note || null,
-        activities: selectedActivities.length > 0 ? selectedActivities : null,
+        activities: finalActivities.length > 0 ? finalActivities : null,
         created_at: new Date().toISOString()
       };
 
       setEntries(prev => [newEntry, ...prev]);
       setSelectedMood(null);
       setSelectedActivities([]);
+      setCustomActivity('');
       setNote('');
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -406,7 +418,7 @@ export default function MoodPage() {
 
         <Grid>
           {/* Quick Log */}
-          <QuickLogCard padding="none">
+          <QuickLogCard>
             <LogHeader>
               <CardTitle style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: 0 }}>
                 <Sparkles size={20} color="#FF6A00" />
@@ -462,6 +474,22 @@ export default function MoodPage() {
                 ))}
               </ActivitiesGrid>
 
+              {selectedActivities.includes('others') && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  style={{ marginBottom: 24 }}
+                >
+                  <SectionLabel>Specify Other Activity</SectionLabel>
+                  <NoteInput
+                    value={customActivity}
+                    onChange={(e) => setCustomActivity(e.target.value)}
+                    placeholder="What else did you do?"
+                    style={{ minHeight: '60px', borderRadius: '12px' }}
+                  />
+                </motion.div>
+              )}
+
               <SectionLabel>Add a note (optional)</SectionLabel>
               <NoteInput
                 value={note}
@@ -483,7 +511,7 @@ export default function MoodPage() {
           </QuickLogCard>
 
           {/* Chart */}
-          <ChartCard padding="none">
+          <ChartCard>
             <ChartHeader>
               <CardTitle style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: 0 }}>
                 <Calendar size={20} color="#FF6A00" />
@@ -523,7 +551,7 @@ export default function MoodPage() {
                         borderRadius: '12px',
                         boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                       }}
-                      formatter={(value: number) => [moodEmojis[value - 1] + ' ' + moodLabels[value - 1], 'Mood']}
+                      formatter={(value: any) => [moodEmojis[value - 1] + ' ' + moodLabels[value - 1], 'Mood']}
                     />
                     <Area
                       type="monotone"
