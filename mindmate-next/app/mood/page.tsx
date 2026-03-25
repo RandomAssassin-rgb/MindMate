@@ -8,7 +8,8 @@ import { Plus, TrendingUp, Calendar, Smile, Heart, Zap, Moon, Coffee, Users, Boo
 import { Button } from '@/components/ui/Button';
 import { Card, CardTitle, CardDescription } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabase';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart, BarChart, Bar } from 'recharts';
+import { useRouter } from 'next/navigation';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -205,7 +206,7 @@ const StatBox = styled(motion.div)`
   padding: 20px;
   background: linear-gradient(135deg, #FF6A0008, #FFD16608);
   border-radius: 16px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid #E5E7EB;
 `;
 
 const StatValue = styled.div`
@@ -250,7 +251,7 @@ const EntryCard = styled(motion.div)`
   border-radius: 16px;
   margin-bottom: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid #E5E7EB;
 `;
 
 const EntryMood = styled.div`
@@ -287,10 +288,21 @@ const EntryActivities = styled.div`
 
 const ActivityTag = styled.span`
   padding: 4px 10px;
-  background: ${({ theme }) => theme.colors.bgSecondary};
+  background: #F3F4F6;
   border-radius: 100px;
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: #4B5563;
+`;
+
+const InsightBox = styled.div`
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
 `;
 
 const moodEmojis = ['😢', '😔', '😐', '🙂', '😊'];
@@ -311,22 +323,13 @@ const activities = [
 
 interface MoodEntry {
   id: string;
-  mood: number;
+  mood_score: number;
   note: string | null;
   activities: string[] | null;
   created_at: string;
 }
 
-// Sample chart data
-const chartData = [
-  { day: 'Mon', mood: 3, fill: '#FF6A00' },
-  { day: 'Tue', mood: 4, fill: '#FF6A00' },
-  { day: 'Wed', mood: 3, fill: '#FF6A00' },
-  { day: 'Thu', mood: 5, fill: '#FF6A00' },
-  { day: 'Fri', mood: 4, fill: '#FF6A00' },
-  { day: 'Sat', mood: 4, fill: '#FF6A00' },
-  { day: 'Sun', mood: 5, fill: '#FF6A00' }
-];
+// Remove hardcoded chartData
 
 export default function MoodPage() {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
@@ -335,18 +338,58 @@ export default function MoodPage() {
   const [note, setNote] = useState('');
   const [entries, setEntries] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  const [insight, setInsight] = useState<string | null>(null);
+  const [loadingInsight, setLoadingInsight] = useState(false);
 
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (statsRef.current) {
-      gsap.fromTo(
-        statsRef.current.children,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, delay: 0.3 }
-      );
-    }
+    const initMoodPage = async () => {
+      // Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+
+      if (session?.user) {
+        // Fetch real entries
+        const { data, error } = await supabase
+          .from('mood_logs')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && data) {
+          setEntries(data);
+          
+          if (data.length >= 3) {
+            setLoadingInsight(true);
+            fetch('/api/mood/insight', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ moodLogs: data.slice(0, 14) })
+            })
+            .then(res => res.json())
+            .then(json => setInsight(json.insight))
+            .catch(console.error)
+            .finally(() => setLoadingInsight(false));
+          }
+        }
+      }
+      setFetching(false);
+
+      if (statsRef.current) {
+        gsap.fromTo(
+          statsRef.current.children,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, delay: 0.3 }
+        );
+      }
+    };
+
+    initMoodPage();
   }, []);
 
   const toggleActivity = (activityId: string) => {
@@ -358,11 +401,16 @@ export default function MoodPage() {
   };
 
   const saveMood = async () => {
+    if (!user) {
+      router.push('/login?redirect=/mood');
+      return;
+    }
+
     if (selectedMood === null) return;
 
     setLoading(true);
     try {
-      // Process activities to replace 'others' with custom text
+      // Process activities
       let finalActivities = [...selectedActivities];
       if (finalActivities.includes('others')) {
         finalActivities = finalActivities.filter(a => a !== 'others');
@@ -371,31 +419,60 @@ export default function MoodPage() {
         }
       }
 
-      const newEntry: MoodEntry = {
-        id: Date.now().toString(),
-        mood: selectedMood,
-        note: note || null,
-        activities: finalActivities.length > 0 ? finalActivities : null,
-        created_at: new Date().toISOString()
-      };
+      // Save to Supabase
+      const { data, error } = await supabase
+        .from('mood_logs')
+        .insert([{
+          user_id: user.id,
+          mood_score: selectedMood,
+          note: note || null,
+          activities: finalActivities.length > 0 ? finalActivities : null,
+        }])
+        .select()
+        .single();
 
-      setEntries(prev => [newEntry, ...prev]);
-      setSelectedMood(null);
-      setSelectedActivities([]);
-      setCustomActivity('');
-      setNote('');
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      if (error) throw error;
+
+      if (data) {
+        setEntries(prev => [data, ...prev]);
+        setSelectedMood(null);
+        setSelectedActivities([]);
+        setCustomActivity('');
+        setNote('');
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
     } catch (error) {
       console.error('Error saving mood:', error);
+      alert('Failed to save mood. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const avgMood = entries.length > 0
-    ? (entries.reduce((sum, e) => sum + e.mood, 0) / entries.length).toFixed(1)
+    ? (entries.reduce((sum, e) => sum + e.mood_score, 0) / entries.length).toFixed(1)
     : '–';
+
+  // Compute dynamic chart data
+  const dynamicChartData = [...entries].slice(0, 7).reverse().map(e => ({
+    day: new Date(e.created_at).toLocaleDateString('en-US', { weekday: 'short' }),
+    mood: e.mood_score
+  }));
+
+  const activityCounts: Record<string, number> = {};
+  entries.forEach(e => {
+    if (e.activities) {
+      e.activities.forEach(a => {
+        activityCounts[a] = (activityCounts[a] || 0) + 1;
+      });
+    }
+  });
+  
+  const activityData = Object.entries(activityCounts).map(([name, count]) => ({
+    name: activities.find(act => act.id === name)?.label || name,
+    count
+  })).sort((a, b) => b.count - a.count).slice(0, 5);
 
   return (
     <PageWrapper>
@@ -502,10 +579,10 @@ export default function MoodPage() {
                 onClick={saveMood}
                 disabled={selectedMood === null || loading}
                 loading={loading}
-                leftIcon={saved ? <Check size={18} /> : <Plus size={18} />}
+                leftIcon={saved ? <Check size={18} /> : (user ? <Plus size={18} /> : null)}
                 style={{ borderRadius: '14px', height: '52px' }}
               >
-                {saved ? 'Saved!' : 'Log My Mood'}
+                {!user ? 'Log in to Save Mood' : (saved ? 'Saved!' : 'Log My Mood')}
               </Button>
             </LogContent>
           </QuickLogCard>
@@ -515,35 +592,59 @@ export default function MoodPage() {
             <ChartHeader>
               <CardTitle style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: 0 }}>
                 <Calendar size={20} color="#FF6A00" />
-                Your Week at a Glance
+                Your Trends & Insights
               </CardTitle>
             </ChartHeader>
 
             <ChartContent>
-              <ChartContainer>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="moodGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#FF6A00" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#FF6A00" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis
-                      dataKey="day"
-                      stroke="#9CA3AF"
-                      fontSize={13}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      domain={[1, 5]}
-                      ticks={[1, 2, 3, 4, 5]}
-                      stroke="#9CA3AF"
-                      fontSize={13}
-                      tickLine={false}
-                      axisLine={false}
-                    />
+              {entries.length >= 3 ? (
+                <>
+                  <InsightBox>
+                    <div style={{ flexShrink: 0, padding: 8, background: '#EFF6FF', borderRadius: 12 }}>
+                      <Sparkles size={24} color="#3B82F6" />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>Weekly AI Insight</div>
+                      {loadingInsight ? (
+                        <div style={{ display: 'flex', gap: '8px', opacity: 0.5, flexWrap: 'wrap' }}>
+                          <span style={{ width: '80%', height: '16px', background: '#CBD5E1', borderRadius: '4px', display: 'inline-block' }}></span>
+                          <span style={{ width: '60%', height: '16px', background: '#CBD5E1', borderRadius: '4px', display: 'inline-block' }}></span>
+                        </div>
+                      ) : (
+                        <div style={{ color: '#475569', fontSize: 14, lineHeight: 1.5 }}>
+                          {insight}
+                        </div>
+                      )}
+                    </div>
+                  </InsightBox>
+                  
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Mood Last 7 Entries</div>
+                  <ChartContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={dynamicChartData}>
+                        <defs>
+                          <linearGradient id="moodGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#FF6A00" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#FF6A00" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                        <XAxis
+                          dataKey="day"
+                          stroke="#9CA3AF"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                          dy={10}
+                        />
+                        <YAxis
+                          domain={[1, 5]}
+                          ticks={[1, 2, 3, 4, 5]}
+                          stroke="#9CA3AF"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
                     <Tooltip
                       contentStyle={{
                         background: 'white',
@@ -553,16 +654,44 @@ export default function MoodPage() {
                       }}
                       formatter={(value: any) => [moodEmojis[value - 1] + ' ' + moodLabels[value - 1], 'Mood']}
                     />
-                    <Area
-                      type="monotone"
-                      dataKey="mood"
-                      stroke="#FF6A00"
-                      strokeWidth={3}
-                      fill="url(#moodGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+                        <Area
+                          type="monotone"
+                          dataKey="mood"
+                          stroke="#FF6A00"
+                          strokeWidth={3}
+                          fill="url(#moodGradient)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+
+                  {activityData.length > 0 && (
+                    <>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: 1, marginTop: 32, marginBottom: 16 }}>Top Activities</div>
+                      <ChartContainer style={{ height: 180 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={activityData} layout="vertical" margin={{ left: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+                            <XAxis type="number" hide />
+                            <YAxis type="category" dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} width={80} />
+                            <Tooltip
+                              cursor={{ fill: 'transparent' }}
+                              contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                            />
+                            <Bar dataKey="count" fill="#3B82F6" radius={[0, 4, 4, 0]} barSize={20} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94A3B8' }}>
+                  <TrendingUp size={48} color="#CBD5E1" style={{ margin: '0 auto 16px' }} />
+                  <div style={{ fontWeight: 500, color: '#475569', marginBottom: 8 }}>Not enough data yet</div>
+                  <p style={{ fontSize: 14, maxWidth: 250, margin: '0 auto' }}>Log your mood for at least 3 days to unlock insights and trends.</p>
+                </div>
+              )}
 
               <StatsRow ref={statsRef}>
                 <StatBox>
@@ -583,7 +712,22 @@ export default function MoodPage() {
         </Grid>
 
         {/* Recent Entries */}
-        {entries.length > 0 && (
+        {!user && !fetching && (
+          <EntriesList style={{ textAlign: 'center', opacity: 0.7 }}>
+            <p>Please log in to view your mood history.</p>
+            <Button variant="secondary" onClick={() => router.push('/login?redirect=/mood')} style={{ marginTop: '16px' }}>
+              Log In securely
+            </Button>
+          </EntriesList>
+        )}
+
+        {user && entries.length === 0 && !fetching && (
+          <EntriesList style={{ textAlign: 'center', opacity: 0.7 }}>
+            <p>No mood entries yet. Your history will appear here.</p>
+          </EntriesList>
+        )}
+
+        {user && entries.length > 0 && (
           <EntriesList>
             <EntriesHeader>
               <EntriesTitle>
@@ -598,8 +742,8 @@ export default function MoodPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <EntryMood style={{ background: `${moodColors[entry.mood - 1]}15` }}>
-                  {moodEmojis[entry.mood - 1]}
+                <EntryMood style={{ background: `${moodColors[entry.mood_score - 1]}15` }}>
+                  {moodEmojis[entry.mood_score - 1]}
                 </EntryMood>
                 <EntryContent>
                   <EntryDate>
@@ -607,8 +751,7 @@ export default function MoodPage() {
                       weekday: 'long',
                       month: 'short',
                       day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit'
+                      hour: 'numeric'
                     })}
                   </EntryDate>
                   {entry.note && <EntryNote>{entry.note}</EntryNote>}

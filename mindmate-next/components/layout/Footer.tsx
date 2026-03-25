@@ -247,6 +247,10 @@ export function Footer() {
             </FooterColumn>
           </FooterGrid>
 
+          <div style={{ marginTop: '48px', padding: '16px', border: '1px solid #E2E8F0', borderRadius: '12px', background: 'white', fontSize: '12px', color: '#64748B', lineHeight: '1.6' }}>
+            <strong>Medical Disclaimer:</strong> MindMate is an AI-powered wellness tool. It provides support and coping strategies based on evidence-based frameworks, but it does **not** provide medical diagnoses, treatment plans, or clinical therapy. Use of this service does not establish a doctor-patient relationship. If you are experiencing a medical or mental health emergency, please call emergency services or one of the crisis lines listed above.
+          </div>
+
           <FooterBottom>
             <Copyright>
               © 2024 MindMate. Made with

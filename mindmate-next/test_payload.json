@@ -1,0 +1,7 @@
+{
+  "situation": "Curl Test",
+  "automaticThought": "I'm worried this API won't load the real key.",
+  "emotion": "Anxiety",
+  "intensity": 60,
+  "balancedThought": "I've handled environment variables before and I can verify it now."
+}

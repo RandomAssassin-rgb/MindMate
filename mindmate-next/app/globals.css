@@ -25,3 +25,53 @@ body {
     text-wrap: balance;
   }
 }
+
+/* ── WCAG 2.1 AA — Focus Styles ───────────────────────────── */
+/* Visible focus ring for all keyboard-interactive elements */
+:focus-visible {
+  outline: 3px solid #8B5CF6;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Remove default outline only when :focus-visible is supported */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── WCAG 2.1 AA — Skip Navigation ───────────────────────── */
+.skip-to-content {
+  position: absolute;
+  top: -999px;
+  left: 0;
+  background: #8B5CF6;
+  color: white;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 16px;
+  z-index: 9999;
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* ── WCAG 2.1 AA — Reduced Motion ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Spin keyframe for loading indicators */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

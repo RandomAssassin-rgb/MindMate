@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Menu, X, Brain, MessageCircle, Activity, BookOpen,
-    Video, User, Phone, Heart
+    Video, User, Phone, Heart, ClipboardList
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
@@ -158,7 +158,7 @@ const navItems = [
     { href: '/learn', label: 'Learn', icon: BookOpen },
     { href: '/chat', label: 'AI Chat', icon: MessageCircle },
     { href: '/mood', label: 'Mood', icon: Activity },
-    { href: '/video', label: 'Video Consult', icon: Video },
+    { href: '/assessments', label: 'Assessments', icon: ClipboardList },
 ];
 
 export function Header() {

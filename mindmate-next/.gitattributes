@@ -1,0 +1,6 @@
+# Override GitHub's Linguist to diversify the Language Stats bar
+# This applies different languages to specific files without changing the code itself.
+
+components/**/*.tsx linguist-language=JavaScript
+app/layout.tsx linguist-language=HTML
+app/globals.css linguist-language=CSS

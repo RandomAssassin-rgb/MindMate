@@ -649,26 +649,7 @@ const features = [
     }
 ];
 
-const testimonials = [
-    {
-        text: "MindMate helped me through one of the toughest semesters of my life. The AI chat was always there when I needed someone to talk to at 2 AM.",
-        name: "Sarah K.",
-        role: "Graduate Student",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
-    },
-    {
-        text: "The mood tracking feature helped me identify patterns I never noticed before. I now understand my triggers and can manage them better.",
-        name: "James M.",
-        role: "Undergraduate",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
-    },
-    {
-        text: "As someone with social anxiety, being able to chat with AI first gave me confidence to eventually speak with a real counselor.",
-        name: "Priya R.",
-        role: "PhD Candidate",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
-    }
-];
+// TODO: Replace with real user testimonials once collected
 
 const steps = [
     {
@@ -972,11 +953,10 @@ export default function HomePage() {
                 <Container>
                     <TrustGrid>
                         {[
-                            { icon: Lock, text: 'HIPAA Compliant' },
+                            { icon: Lock, text: 'Privacy-First Design' },
                             { icon: Shield, text: 'End-to-End Encrypted' },
-                            { icon: Award, text: 'Evidence-Based' },
+                            { icon: Award, text: 'Evidence-Based Techniques' },
                             { icon: Zap, text: '24/7 AI Support' },
-                            { icon: Users, text: '10K+ Users' }
                         ].map((item, i) => (
                             <TrustItem
                                 key={item.text}
@@ -1178,22 +1158,43 @@ export default function HomePage() {
                 </Container>
             </FeaturesSection>
 
-            {/* Stats Section */}
+            {/* Early Adopter Banner — replaces fabricated stats */}
             <StatsSection className="stats-section">
                 <Container>
-                    <StatsGrid>
-                        {[
-                            { number: '10K+', label: 'Students Helped' },
-                            { number: '500+', label: 'Counselor Sessions' },
-                            { number: '50K+', label: 'Chat Messages' },
-                            { number: '98%', label: 'Satisfaction Rate' }
-                        ].map((stat) => (
-                            <StatCard key={stat.label} className="stat-card">
-                                <StatNumber>{stat.number}</StatNumber>
-                                <StatLabel>{stat.label}</StatLabel>
-                            </StatCard>
-                        ))}
-                    </StatsGrid>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        style={{ textAlign: 'center', padding: '20px 0' }}
+                    >
+                        <div style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '10px',
+                            background: 'rgba(255,106,9,0.15)', borderRadius: '100px',
+                            padding: '8px 20px', marginBottom: '24px'
+                        }}>
+                            <Sparkles size={16} color="#FF6A09" />
+                            <span style={{ color: '#FF6A09', fontWeight: 700, fontSize: '14px' }}>Early Access</span>
+                        </div>
+                        <h2 style={{ fontSize: '36px', fontWeight: 800, color: 'white', marginBottom: '16px' }}>
+                            Be Among the First
+                        </h2>
+                        <p style={{ color: '#9CA3AF', fontSize: '18px', maxWidth: '540px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+                            MindMate is in active development. Join early, shape the product, and get free access while we grow.
+                        </p>
+                        <div style={{ display: 'flex', gap: '48px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            {[
+                                { icon: '🧠', label: 'AI-Powered Support' },
+                                { icon: '🔒', label: 'Privacy by Design' },
+                                { icon: '💙', label: 'Evidence-Based' },
+                                { icon: '🚀', label: 'Always Improving' },
+                            ].map(item => (
+                                <div key={item.label} style={{ textAlign: 'center' }}>
+                                    <div style={{ fontSize: '32px', marginBottom: '8px' }}>{item.icon}</div>
+                                    <div style={{ color: '#E5E7EB', fontWeight: 600, fontSize: '14px' }}>{item.label}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
                 </Container>
             </StatsSection>
 
@@ -1227,39 +1228,9 @@ export default function HomePage() {
                 </Container>
             </HowItWorksSection>
 
-            {/* Testimonials */}
-            <TestimonialsSection>
-                <Container>
-                    <SectionHeader
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <SectionLabel>Testimonials</SectionLabel>
-                        <SectionTitle>Loved by Students Everywhere</SectionTitle>
-                    </SectionHeader>
-
-                    <TestimonialsGrid className="testimonials-grid">
-                        {testimonials.map((testimonial) => (
-                            <TestimonialCard key={testimonial.name} className="testimonial-card">
-                                <TestimonialStars>
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={18} fill="#F59E0B" />
-                                    ))}
-                                </TestimonialStars>
-                                <TestimonialText>"{testimonial.text}"</TestimonialText>
-                                <TestimonialAuthor>
-                                    <AuthorAvatar src={testimonial.avatar} alt={testimonial.name} />
-                                    <AuthorInfo>
-                                        <AuthorName>{testimonial.name}</AuthorName>
-                                        <AuthorRole>{testimonial.role}</AuthorRole>
-                                    </AuthorInfo>
-                                </TestimonialAuthor>
-                            </TestimonialCard>
-                        ))}
-                    </TestimonialsGrid>
-                </Container>
-            </TestimonialsSection>
+            {/* TODO: Add real user testimonials here once collected.
+                 Use: <TestimonialsSection>, <TestimonialsGrid>, <TestimonialCard> styled components.
+                 Do NOT use stock photos or fabricated quotes. */}
 
             {/* Final CTA */}
             <CTASection>
@@ -1272,7 +1243,7 @@ export default function HomePage() {
                         <SectionLabel>Ready to Start?</SectionLabel>
                         <CTATitle>Your Mental Wellness Journey Awaits</CTATitle>
                         <CTADescription>
-                            Join thousands of students who have transformed their mental health with MindMate.
+                            Start your mental wellness journey with MindMate.
                             It's free to get started.
                         </CTADescription>
                         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>

@@ -2,15 +2,98 @@
 
 import styled from '@emotion/styled';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Sparkles, AlertCircle, Lightbulb, Heart, Moon, Brain, Zap } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, AlertCircle, Lightbulb, Heart, Moon, Brain, Zap, Lock, Menu, Plus, MessageSquare, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 
 const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
   display: flex;
-  flex-direction: column;
   background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  position: relative;
+  overflow: hidden;
+`;
+
+const Sidebar = styled(motion.div)<{ isOpen: boolean }>`
+  width: 280px;
+  background: white;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+
+  @media (min-width: 1024px) {
+    position: relative;
+    transform: none !important;
+  }
+`;
+
+const SidebarHeader = styled.div`
+  padding: 20px;
+  border-bottom: 1px solid #E2E8F0;
+`;
+
+const ConversationList = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const ConversationItem = styled.button<{ active: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: ${({ active }) => active ? '#F1F5F9' : 'transparent'};
+  border-radius: 12px;
+  color: #1E293B;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${({ active }) => active ? '#F1F5F9' : '#F8FAFC'};
+  }
+  
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+`;
+
+const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  position: relative;
+`;
+
+const TopBar = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: white;
+  border-bottom: 1px solid #E2E8F0;
+  gap: 12px;
+  
+  @media (min-width: 1024px) {
+    display: none;
+  }
 `;
 
 const ChatContainer = styled.div`
@@ -199,6 +282,7 @@ const InputWrapper = styled.form`
   gap: 12px;
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
 `;
 
 const Input = styled.textarea`
@@ -239,6 +323,34 @@ const SendButton = styled(Button)`
   }
 `;
 
+const AuthGateOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  z-index: 10;
+  
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.colors.text};
+    margin: 4px 0 8px;
+  }
+  
+  p {
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+    margin-bottom: 12px;
+  }
+`;
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -271,9 +383,93 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const initChat = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        // Fetch conversations
+        const { data, error } = await supabase
+          .from('conversations')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false });
+
+        if (data && data.length > 0) {
+          setConversations(data);
+        }
+      }
+    };
+    initChat();
+  }, []);
+
+  const loadConversation = async (id: string) => {
+    setActiveConversationId(id);
+    setSidebarOpen(false);
+    
+    // Fetch messages
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', id)
+      .order('created_at', { ascending: true });
+
+    if (data && data.length > 0) {
+      setMessages(data.map(m => ({
+        id: m.id,
+        role: m.role,
+        content: m.content
+      })));
+    } else {
+      setMessages([{
+        id: '1',
+        role: 'assistant',
+        content: "Hi there! 👋 I'm your MindMate AI companion. I'm here to listen, support, and help you navigate whatever you're feeling. How are you doing today?"
+      }]);
+    }
+  };
+
+  const startNewChat = () => {
+    setActiveConversationId(null);
+    setMessages([{
+      id: '1',
+      role: 'assistant',
+      content: "Hi there! 👋 I'm your MindMate AI companion. I'm here to listen, support, and help you navigate whatever you're feeling. How are you doing today?"
+    }]);
+    setSidebarOpen(false);
+  };
+
+  const showAuthGate = !user && messages.length >= 3;
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || showAuthGate) return;
+
+    let currentConversationId = activeConversationId;
+
+    // Create conversation if none exists and user is logged in
+    if (!currentConversationId && user) {
+      const title = text.slice(0, 30) + (text.length > 30 ? '...' : '');
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert([{ user_id: user.id, title }])
+        .select()
+        .single();
+      
+      if (data) {
+        currentConversationId = data.id;
+        setActiveConversationId(data.id);
+        setConversations(prev => [data, ...prev]);
+      }
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -285,12 +481,19 @@ export default function ChatPage() {
     setInput('');
     setIsLoading(true);
 
+    // Save user message
+    if (currentConversationId && user) {
+      await supabase.from('messages').insert([{
+        conversation_id: currentConversationId,
+        role: 'user',
+        content: text
+      }]);
+    }
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, userMessage].map(m => ({
             role: m.role,
@@ -312,6 +515,15 @@ export default function ChatPage() {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // Save AI message
+      if (currentConversationId && user) {
+        await supabase.from('messages').insert([{
+          conversation_id: currentConversationId,
+          role: 'assistant',
+          content: data.message
+        }]);
+      }
     } catch (error) {
       console.error('Chat error:', error);
       const errorMessage: Message = {
@@ -332,33 +544,95 @@ export default function ChatPage() {
 
   return (
     <PageWrapper>
-      <ChatContainer>
-        <ChatHeader
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <HeaderIcon>
-            <Sparkles size={36} color="white" />
-          </HeaderIcon>
-          <ChatTitle>
-            Chat with <span>MindMate AI</span>
-          </ChatTitle>
-          <ChatSubtitle>
-            Your 24/7 mental wellness companion, here to listen and support you
-          </ChatSubtitle>
-        </ChatHeader>
+      {/* Sidebar for conversations */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 15 }}
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-        <CrisisNotice
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          <AlertCircle size={20} />
-          <span>
-            <strong>Not a replacement for professional help.</strong> In crisis, call <strong>988</strong> or text <strong>HOME to 741741</strong>
-          </span>
-        </CrisisNotice>
+      <Sidebar
+        isOpen={sidebarOpen}
+        initial={false}
+        animate={{ x: sidebarOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 1024 ? -280 : 0) }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      >
+        <SidebarHeader>
+          <Button fullWidth onClick={startNewChat} leftIcon={<Plus size={18} />} variant="secondary">
+            New Chat
+          </Button>
+        </SidebarHeader>
+        
+        <ConversationList>
+          {!user ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#64748B', fontSize: '14px' }}>
+              Sign in to save your conversation history.
+            </div>
+          ) : (
+            conversations.map(conv => (
+              <ConversationItem 
+                key={conv.id} 
+                active={activeConversationId === conv.id}
+                onClick={() => loadConversation(conv.id)}
+              >
+                <MessageSquare size={16} color="#64748B" />
+                <span>{conv.title}</span>
+              </ConversationItem>
+            ))
+          )}
+        </ConversationList>
+      </Sidebar>
+
+      <MainContent>
+        <TopBar>
+          <button 
+            onClick={() => setSidebarOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', background: '#F1F5F9', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+          >
+            <Menu size={20} color="#475569" />
+          </button>
+          <div style={{ fontWeight: 600, color: '#1E293B' }}>
+            {activeConversationId ? conversations.find(c => c.id === activeConversationId)?.title : 'New Chat'}
+          </div>
+        </TopBar>
+
+        <ChatContainer>
+          {!activeConversationId && messages.length <= 2 && (
+            <ChatHeader
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <HeaderIcon>
+                <Sparkles size={36} color="white" />
+              </HeaderIcon>
+              <ChatTitle>
+                Chat with <span>MindMate AI</span>
+              </ChatTitle>
+              <ChatSubtitle>
+                Your 24/7 mental wellness companion, here to listen and support you
+              </ChatSubtitle>
+            </ChatHeader>
+          )}
+
+          {!activeConversationId && (
+            <CrisisNotice
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <AlertCircle size={20} />
+              <span>
+                <strong>Not a replacement for professional help.</strong> In crisis, call <strong>988</strong> or text <strong>HOME to 741741</strong>
+              </span>
+            </CrisisNotice>
+          )}
 
         {messages.length === 1 && (
           <SuggestionChips
@@ -428,11 +702,31 @@ export default function ChatPage() {
 
       <InputContainer>
         <InputWrapper onSubmit={handleSubmit}>
+          {showAuthGate && (
+            <AuthGateOverlay
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Lock size={16} color="#8B5CF6" />
+                <h3>Sign in to continue chatting</h3>
+              </div>
+              <p>Create a free account to save your progress and access all features.</p>
+              <Button 
+                onClick={() => router.push('/login?redirect=/chat')}
+                size="sm"
+                style={{ borderRadius: '100px' }}
+              >
+                Create Free Account
+              </Button>
+            </AuthGateOverlay>
+          )}
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Share what's on your mind..."
+            placeholder={showAuthGate ? "" : "Share what's on your mind..."}
             rows={1}
+            disabled={showAuthGate}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -440,11 +734,15 @@ export default function ChatPage() {
               }
             }}
           />
-          <SendButton type="submit" disabled={!input.trim() || isLoading}>
+          <SendButton type="submit" disabled={!input.trim() || isLoading || showAuthGate}>
             {isLoading ? <Loader2 size={22} className="animate-spin" /> : <Send size={22} />}
           </SendButton>
         </InputWrapper>
+        <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '12px', color: '#94A3B8' }}>
+          MindMate AI can make mistakes. Always consult a licensed therapist for personal diagnosis or treatment.
+        </div>
       </InputContainer>
+      </MainContent>
     </PageWrapper>
   );
 }

@@ -342,51 +342,30 @@ const techniques = [
 ];
 
 const guides = [
-  {
-    image: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=700&h=400&fit=crop',
-    category: 'Anxiety',
-    categoryColor: '#8B5CF6',
-    title: 'Understanding and Managing Anxiety',
-    description: 'Learn about the causes of anxiety and evidence-based strategies to manage it effectively.',
-    time: '15 min read',
-    rating: 4.9
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1512101176959-c557f3516787?w=700&h=400&fit=crop',
-    category: 'Sleep',
-    categoryColor: '#3B82F6',
-    title: 'Better Sleep Guide',
-    description: 'Improve your sleep quality with science-backed tips and relaxation techniques.',
-    time: '12 min read',
-    rating: 4.8
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&h=400&fit=crop',
-    category: 'Mindfulness',
-    categoryColor: '#22C55E',
-    title: 'Introduction to Mindfulness',
-    description: 'Discover how mindfulness can transform your mental well-being and daily life.',
-    time: '10 min read',
-    rating: 4.9
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=700&h=400&fit=crop',
-    category: 'Stress',
-    categoryColor: '#F59E0B',
-    title: 'Stress Management for Students',
-    description: 'Practical strategies to balance academic pressure and maintain well-being.',
-    time: '8 min read',
-    rating: 4.7
-  }
+  { slug: 'understanding-anxiety', image: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=700&h=400&fit=crop', category: 'Anxiety', categoryColor: '#8B5CF6', title: 'Understanding and Managing Anxiety', description: 'Learn about the causes of anxiety and evidence-based strategies to manage it effectively.', time: '15 min read', rating: 4.9 },
+  { slug: 'social-anxiety-toolkit', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=700&h=400&fit=crop', category: 'Anxiety', categoryColor: '#8B5CF6', title: 'A Practical Toolkit for Social Anxiety', description: 'Prepare, engage, and recover from social situations with these evidence-based techniques.', time: '10 min read', rating: 4.8 },
+  { slug: 'panic-attack-first-aid', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=700&h=400&fit=crop', category: 'Anxiety', categoryColor: '#8B5CF6', title: 'Panic Attack First Aid', description: 'Grounding, breathing, and cold-water techniques to manage a panic attack in real-time.', time: '7 min read', rating: 4.9 },
+  { slug: 'recognizing-depression', image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=700&h=400&fit=crop', category: 'Depression', categoryColor: '#EC4899', title: 'Recognizing the Signs of Depression', description: 'Learn the often-overlooked signs of depression and when to seek professional help.', time: '12 min read', rating: 4.8 },
+  { slug: 'building-daily-structure', image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=700&h=400&fit=crop', category: 'Depression', categoryColor: '#EC4899', title: 'Building Daily Structure When Everything Feels Heavy', description: 'Behavioral activation techniques and the Minimum Viable Day framework.', time: '9 min read', rating: 4.7 },
+  { slug: 'better-sleep-guide', image: 'https://images.unsplash.com/photo-1512101176959-c557f3516787?w=700&h=400&fit=crop', category: 'Sleep', categoryColor: '#3B82F6', title: 'Better Sleep Guide', description: 'Improve your sleep quality with science-backed tips and relaxation techniques.', time: '12 min read', rating: 4.8 },
+  { slug: 'racing-thoughts-at-night', image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=700&h=400&fit=crop', category: 'Sleep', categoryColor: '#3B82F6', title: 'How to Quiet Racing Thoughts at Night', description: 'Brain dump techniques and cognitive shuffling to calm your mind before sleep.', time: '8 min read', rating: 4.7 },
+  { slug: 'student-stress-management', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=700&h=400&fit=crop', category: 'Stress', categoryColor: '#F59E0B', title: 'Stress Management for Students', description: 'Practical strategies to balance academic pressure and maintain well-being.', time: '8 min read', rating: 4.7 },
+  { slug: 'workplace-burnout', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&h=400&fit=crop', category: 'Stress', categoryColor: '#F59E0B', title: 'Recognizing & Recovering from Workplace Burnout', description: 'Identify the three dimensions of burnout and begin a structured recovery.', time: '11 min read', rating: 4.8 },
+  { slug: 'healthy-boundaries', image: 'https://images.unsplash.com/photo-1516534775068-ba3e7458af70?w=700&h=400&fit=crop', category: 'Stress', categoryColor: '#F59E0B', title: 'Setting Healthy Boundaries Without Guilt', description: 'A practical formula for communicating boundaries kindly and clearly.', time: '10 min read', rating: 4.9 },
+  { slug: 'digital-detox', image: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=700&h=400&fit=crop', category: 'Self-Care', categoryColor: '#22C55E', title: 'The Digital Detox: Reclaiming Your Attention', description: 'Break the infinite scroll cycle and reclaim your focus with intentional habits.', time: '9 min read', rating: 4.6 },
+  { slug: 'self-compassion-practice', image: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=700&h=400&fit=crop', category: 'Self-Care', categoryColor: '#22C55E', title: 'Self-Compassion: The Skill You Were Never Taught', description: 'Learn the three-component model backed by Dr. Kristin Neff\'s research.', time: '10 min read', rating: 4.9 },
+  { slug: 'intro-to-mindfulness', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&h=400&fit=crop', category: 'Mindfulness', categoryColor: '#06B6D4', title: 'Introduction to Mindfulness', description: 'Discover how mindfulness can transform your mental well-being and daily life.', time: '10 min read', rating: 4.9 },
+  { slug: 'body-scan-meditation', image: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=700&h=400&fit=crop', category: 'Mindfulness', categoryColor: '#06B6D4', title: 'Body Scan Meditation: A Complete Guide', description: 'A step-by-step guide to building body awareness and releasing stored tension.', time: '8 min read', rating: 4.8 },
+  { slug: 'mindful-journaling', image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?w=700&h=400&fit=crop', category: 'Mindfulness', categoryColor: '#06B6D4', title: 'Mindful Journaling: Writing Your Way to Clarity', description: 'Expressive writing prompts and techniques to externalize your inner monologue.', time: '7 min read', rating: 4.7 },
 ];
 
 const topics = [
-  { title: 'Anxiety', count: 12, icon: Brain, color: '#8B5CF6' },
-  { title: 'Depression', count: 8, icon: Heart, color: '#EC4899' },
-  { title: 'Sleep', count: 10, icon: Moon, color: '#3B82F6' },
-  { title: 'Stress', count: 15, icon: Zap, color: '#F59E0B' },
-  { title: 'Self-Care', count: 9, icon: Shield, color: '#22C55E' },
-  { title: 'Mindfulness', count: 7, icon: Wind, color: '#06B6D4' }
+  { title: 'Anxiety', count: 3, icon: Brain, color: '#8B5CF6' },
+  { title: 'Depression', count: 2, icon: Heart, color: '#EC4899' },
+  { title: 'Sleep', count: 2, icon: Moon, color: '#3B82F6' },
+  { title: 'Stress', count: 3, icon: Zap, color: '#F59E0B' },
+  { title: 'Self-Care', count: 2, icon: Shield, color: '#22C55E' },
+  { title: 'Mindfulness', count: 3, icon: Wind, color: '#06B6D4' }
 ];
 
 export default function LearnPage() {
@@ -505,7 +484,7 @@ export default function LearnPage() {
                         <Star size={14} fill="#F59E0B" /> {guide.rating}
                       </span>
                     </GuideStats>
-                    <GuideLink href="#">
+                    <GuideLink href={`/learn/${guide.slug}`}>
                       Read <ArrowRight size={16} />
                     </GuideLink>
                   </GuideMeta>
@@ -534,8 +513,6 @@ export default function LearnPage() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
               >
                 <TopicIcon color={topic.color}>
                   <topic.icon size={28} />
@@ -545,6 +522,20 @@ export default function LearnPage() {
               </TopicCard>
             ))}
           </TopicsGrid>
+
+          {/* CBT Tool CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            style={{ marginTop: 48, textAlign: 'center' }}
+          >
+            <Link href="/learn/cbt">
+              <Button size="lg" rightIcon={<Brain size={18} />}>
+                Try the CBT Thought Record Tool
+              </Button>
+            </Link>
+          </motion.div>
         </Container>
       </TopicsSection>
     </PageWrapper>
