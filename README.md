@@ -12,7 +12,7 @@ Your 24/7 mental wellness partner — combining a high-fidelity **Claude 3.5 Son
 
 <br />
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-https://mindmate-production.vercel.app/-0D7377?style=for-the-badge&logo=vercel&logoColor=white)](https://mindmate-hazel.vercel.app)
+[![Live Demo](https://mindmate-production.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
