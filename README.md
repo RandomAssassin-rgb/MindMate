@@ -1,168 +1,214 @@
-# MindMate AI Powered Mental Wellness Companion
+<div align="center">
 
-> **MindMate** is an AI-assisted mental wellness platform designed to support emotional wellbeing through intelligent conversation, self-reflection tools, and community interaction built with modern full-stack technologies and privacy-first principles.
+<img src="https://img.shields.io/badge/MindMate-Mental%20Wellness-0D7377?style=for-the-badge&logoColor=white" alt="MindMate" />
 
-## Overview
+# 🧠 MindMate
 
-MindMate combines **AI companionship, emotional tracking, and guided wellness tools** into a single platform.
-It aims to provide accessible mental wellness support while maintaining user privacy and data security.
+### AI-Powered Mental Wellness Companion
 
-This project is a wellness support tool not a substitute for professional medical care.
+**Talk. Track. Heal. Grow.**
 
-## Core Features
+Your 24/7 mental wellness partner — combining a high-fidelity **Claude 3.5 Sonnet** AI companion, mood analytics, guided meditation, clinical assessments, and real-time community support in a single privacy-first platform.
 
-### AI Companion
+<br />
 
-* Context-aware conversational AI powered by Groq LLMs
-* Emotionally supportive responses designed for wellness contexts
-* Continuous conversation memory for better personalization
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-mindmate--hazel.vercel.app-0D7377?style=for-the-badge&logo=vercel&logoColor=white)](https://mindmate-hazel.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
 
-### Community Support
+<br />
 
-* AI-augmented community interaction
-* Supportive discussion environment
-* Autonomous AI personalities to encourage engagement
+> ⚠️ **MindMate is a wellness support tool — not a substitute for professional medical care.**
+> If you are in crisis, please call **iCall: 9152987821** or **Vandrevala Foundation: 1860-2662-345** (India) immediately.
 
-### Mood Tracking and Insights
+</div>
 
-* Daily mood check-ins
-* Visual emotional trend analysis
-* Habit-building streak system
+---
 
-### Wellness Toolkit
+## 📖 Table of Contents
 
-* Guided breathing exercises
-* Meditation resources
-* Relaxation audio environments
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Security & Privacy](#-security--privacy)
+- [License](#-license)
 
-### Gamified Growth
+---
 
-* Achievement badges
-* Positive habit streak tracking
-* Weekly self-reflection insights
+## 🌟 Overview
 
-### Privacy Focused Architecture
+Mental wellness tools are often fragmented, expensive, or culturally disconnected. MindMate is built to fix that.
 
-* Supabase Row Level Security (RLS)
-* Secure authentication workflows
-* Minimal sensitive data exposure
+It combines an **Emotionally Intelligent AI** powered by Claude 3.5 Sonnet, a **mood tracking engine** with longitudinal insights, a **guided meditation library with real audio**, **validated clinical screenings** (PHQ-9, GAD-7), and a **CBT journaling tool** — all wrapped in a privacy-first architecture with Supabase Row Level Security at its core.
 
-## Tech Stack
+MindMate is designed for students and young adults to build resilience and manage mental health in a safe, judgment-free space.
 
-### Frontend
+```
+The goal of MindMate is not to keep you on the app.
+It's to help you build enough resilience that you need it less.
+```
 
-* **Next.js 14 (App Router)**
-* React and TypeScript
-* Tailwind CSS
-* Framer Motion animations
+---
 
-### Backend and Data
+## ✨ Features
 
-* Supabase (Postgres, Auth, Realtime)
-* Secure API routes via Next.js
+### 🤖 AI Companion
+- **High-Fidelity Intelligence**: Conversations powered by **OpenRouter (Claude 3.5 Sonnet)** with a **Groq (Llama 3)** fallback layer for 100% uptime.
+- **Context-aware persistence**: AI remembers your history and references previous conversations to provide tailored support.
+- **Mood-aware responses**: AI factors in your recent emotional patterns and assessments before responding.
+- **Deterministic crisis detection**: Hardcoded safety layer for crisis indicators, bypassing LLM logic for instant emergency resource routing.
 
-### AI Integration
+### 📊 Mood Tracking & Insights
+- **Daily Check-ins**: Log moods with activity correlation tags.
+- **Visual Analytics**: 7-day and 30-day interactive charts powered by Recharts.
+- **Smart Insights**: Automated patterns detection linking activities to emotional states.
 
-* Groq Cloud API
-* Llama 3 70B model support
+### 🧘 Wellness Toolkit
+- **Guided Breathing**: Interactive animations for Box Breathing, 4-7-8, and more.
+- **Audio Sessions**: Real, high-quality audio sessions for Sleep, Meditation, and Nature Sounds.
+- **CBT Journaling**: Structured cognitive reframing tool to help challenge negative thought patterns.
 
-### Deployment
+### 🩺 Clinical Tools
+- **PHQ-9 & GAD-7**: Validated clinical assessments with automated scoring and historical tracking.
+- **Progress Export**: Generate PDF clinical summaries of your progress to share with therapists.
 
-* Vercel recommended
+### 🔒 Privacy & Security
+- **Supabase RLS**: Row Level Security ensures only you can access your data.
+- **No Data Training**: Your personal conversations are never used to train AI models.
+- **Secure Auth**: Industry-standard Google OAuth and Email/Password integration.
 
-## Getting Started
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | Next.js 14 (App Router) |
+| **Language** | TypeScript 5 |
+| **Styling** | Emotion/Styled Components + Tailwind CSS |
+| **Animations** | GSAP + Framer Motion |
+| **Backend & DB** | Supabase (Postgres + Auth + Realtime) |
+| **AI / LLM** | OpenRouter (Claude 3.5 Sonnet) / Groq Llama 3 |
+| **Charts** | Recharts |
+| **PWA** | Next-PWA for offline and mobile installation |
+| **Deployment** | Vercel |
+
+---
+
+## 📁 Project Structure
+
+```
+MindMate/
+│
+├── mindmate-next/                  # ✅ Active codebase (Next.js 14)
+│   ├── app/                        # App Router — pages and API routes
+│   │   ├── chat/                   # AI companion ( Claude 3.5 Sonnet)
+│   │   ├── mood/                   # Mood tracking & Recharts dashboard
+│   │   ├── relax/                  # Meditation library with Audio
+│   │   ├── learn/                  # Content library + CBT journal
+│   │   ├── assessments/            # PHQ-9 and GAD-7
+│   │   └── api/                    # AI & Database Proxy routes
+│   ├── components/                 # Styled Components library
+│   ├── lib/                        # Supabase & OpenRouter/Groq clients
+│   └── theme/                      # Design system tokens
+│
+├── legacy-v1/                      # 📦 Archived vanilla prototype
+├── SECURITY.md                     # RLS policy documentation
+└── README.md                       # You are here
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-* Node.js 18+
-* Supabase account
-* Groq API key
+- **Node.js** 18+
+- **npm** or **yarn**
+- A [Supabase](https://supabase.com) account
+- An [OpenRouter](https://openrouter.ai) or [Groq](https://console.groq.com) API key
 
-### Installation
+### 1. Clone & Install
 
-1. Clone the repository
-
-```
+```bash
 git clone https://github.com/RandomAssassin-rgb/MindMate.git
 cd MindMate/mindmate-next
-```
-
-2. Install dependencies
-
-```
 npm install
 ```
 
-3. Configure environment variables
-   Create `.env.local`:
+### 2. Set Up Environment Variables
 
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-GROQ_API_KEY=your_groq_api_key
+```bash
+cp .env.example .env.local
 ```
 
-4. Start development server
+### 3. Initialize Database
 
-```
+Apply the SQL migration scripts found in the root directory via the Supabase SQL Editor:
+- `supabase_forum_posts.sql`
+- `supabase_cbt_journal.sql`
+- `supabase_assessments.sql`
+- `supabase_chat_history.sql`
+
+### 4. dev
+
+```bash
 npm run dev
 ```
 
-Visit:
+---
 
-```
-http://localhost:3000
-```
+## 🔑 Environment Variables
 
-## Project Structure
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 
-```
-mindmate-next/
-│
-├── app            App Router pages and API routes
-├── components     UI and layout components
-├── lib            Utilities and service clients
-├── theme          Design tokens and styling config
-└── types          TypeScript definitions
-```
+# AI Providers
+OPENROUTER_API_KEY=your_openrouter_key
+GROQ_API_KEY=your_groq_key
 
-## Deployment Recommended Vercel
-
-1. Push repository to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy
-
-Done
-
-## Contributing
-
-Contributions are welcome.
-
-Typical workflow:
-
-```
-fork → branch → commit → pull request
+# App Settings
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Please:
+---
 
-* Write clear commit messages
-* Keep code consistent
-* Add documentation when needed
+## 🗺 Roadmap
 
-## License
+- [x] AI companion with Claude 3.5 Sonnet
+- [x] Persistent chat history (Supabase)
+- [x] Mood tracking with Recharts
+- [x] Meditation library with actual Audio
+- [x] Clinical Assessments (PHQ-9/GAD-7)
+- [x] CBT Journaling Tool
+- [x] Mobile PWA Support
+- [x] Community Forum Feed
+- [ ] Voice journaling with Whisper transcription
+- [ ] Weekly Insight Report email delivery
+- [ ] Therapist marketplace integration
+- [ ] Multilingual support (Tamil, Hindi, Telugu)
 
-MIT License free for personal and commercial use.
+---
 
-## Why This Project Matters
+## 📄 License
 
-Mental wellness tools are often:
+MIT License — see [`LICENSE`](LICENSE) for details.
 
-* Fragmented
-* Expensive
-* Not privacy-focused
+---
 
-MindMate explores how **AI and modern web tech** can create accessible emotional wellness support responsibly.
+<div align="center">
 
+Built with care for mental wellness 🌿
 
+[mindmate-hazel.vercel.app](https://mindmate-hazel.vercel.app)
+
+</div>
